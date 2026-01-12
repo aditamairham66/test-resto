@@ -22,7 +22,7 @@ class ReceiptIngridientController extends Controller
             })
             ->when($request->ingridient_id, function ($query, $ingridient_id) {
                 $query->where('master_ingridient_id', $ingridient_id);
-            });
+            })->where('receipt_id', $request->receipt_id);
 
         return view('pages.receipt.ingridient.index', [
             'title' => 'Receipt Ingridient',
