@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Receipt;
 
 use App\Http\Controllers\Controller;
 use App\Models\MasterCategory;
-use App\Models\MasterIngridient;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
 
@@ -13,11 +12,22 @@ class ReceiptController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index(Request $request)
+    {   
+        $receipts = Receipt::query()
+            ->when($request->q, function ($query, $q) {
+                $query->where('name', 'like', '%' . $q . '%');
+            })
+            ->when($request->category_id, function ($query, $category_id) {
+                $query->where('master_category_id', $category_id);
+            });
+
         return view('pages.receipt.index', [
             'title' => 'Receipt',
-            'receipts' => Receipt::all(),
+            'receipts' => $receipts->get(),
+            'categories' => MasterCategory::all(),
+            'q' => $request->q,
+            'category_id' => $request->category_id,
         ]);
     }
 
@@ -88,7 +98,7 @@ class ReceiptController extends Controller
      */
     public function destroy(Receipt $receipt)
     {
-        $receipt->delete(); 
+        $receipt->delete();
 
         return redirect()->route('receipt.index')->with('success', 'Receipt deleted successfully.');
     }

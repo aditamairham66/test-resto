@@ -12,6 +12,25 @@
             </div>
         </div>
         <div class="card-body">
+            <form id="formFilter">
+                <div class="mb-3">
+                    <input type="text" name="q" class="form-control" value="{{ $q ?? null }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="">Ingridient</label>
+                    <select name="ingridient_id" class="form-control"
+                        onchange="document.getElementById('formFilter').submit()">
+                        <option value="">-- Select Ingridient --</option>
+                        @foreach ($ingridients as $ingridient)
+                            <option value="{{ $ingridient->id }}"
+                                {{ old('ingridient_id', $ingridient_id ?? null) == $ingridient->id ? 'selected' : '' }}>
+                                {{ $ingridient->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </form>
+
             <div class="table responsive">
                 <table class="table table-bordered">
                     <thead>

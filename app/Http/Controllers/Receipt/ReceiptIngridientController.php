@@ -14,10 +14,23 @@ class ReceiptIngridientController extends Controller
      */
     public function index(Request $request)
     {
+        $receipts = ReceiptIngridient::query()
+            ->when($request->q, function ($query, $q) {
+                $query->whereHas('receipt', function ($query) use ($q) {
+                    $query->where('name', 'like', '%' . $q . '%');
+                });
+            })
+            ->when($request->ingridient_id, function ($query, $ingridient_id) {
+                $query->where('master_ingridient_id', $ingridient_id);
+            });
+
         return view('pages.receipt.ingridient.index', [
             'title' => 'Receipt Ingridient',
-            'receipts' => ReceiptIngridient::where('receipt_id', $request->receipt_id)->get(),
+            'receipts' => $receipts->get(),
             'receipt_id' => $request->receipt_id,
+            'ingridients' => MasterIngridient::all(),
+            'q' => $request->q,
+            'ingridient_id' => $request->ingridient_id,
         ]);
     }
 
