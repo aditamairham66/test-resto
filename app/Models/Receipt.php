@@ -17,4 +17,9 @@ class Receipt extends Model
     {
         return $this->belongsTo(MasterCategory::class, 'master_category_id');
     }
+
+    public function ingridients()
+    {
+        return $this->hasMany(ReceiptIngridient::class, 'receipt_id');
+    }
 }

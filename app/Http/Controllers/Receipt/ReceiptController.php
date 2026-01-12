@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Receipt;
 
 use App\Http\Controllers\Controller;
 use App\Models\MasterCategory;
+use App\Models\MasterIngridient;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
 
@@ -20,14 +21,21 @@ class ReceiptController extends Controller
             })
             ->when($request->category_id, function ($query, $category_id) {
                 $query->where('master_category_id', $category_id);
+            })
+            ->when($request->ingridient_id, function ($query, $ingridient_id) {
+                $query->whereHas('ingridients', function ($query) use ($ingridient_id) {
+                    $query->where('master_ingridient_id', $ingridient_id);
+                });
             });
 
         return view('pages.receipt.index', [
             'title' => 'Receipt',
             'receipts' => $receipts->get(),
             'categories' => MasterCategory::all(),
+            'ingridients' => MasterIngridient::all(),
             'q' => $request->q,
             'category_id' => $request->category_id,
+            'ingridient_id' => $request->ingridient_id,
         ]);
     }
 
